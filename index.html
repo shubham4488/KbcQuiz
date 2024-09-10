@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KBC Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .quiz-container {
+      background-color: midnightblue;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      width: 400px;
+    }
+
+    #options-container {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    .option {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin: 10px 0;
+      cursor: pointer;
+      display: none; /* Initially hide options */
+    }
+
+    .option:hover {
+      background-color: #666;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quiz-container">
+    <h1>KBC Quiz</h1>
+    <button id="start-button">Start Quiz</button> <!-- New Start Button -->
+    <div id="question-container" style="display:none;"> <!-- Hide initially -->
+      <audio id="question-audio" src="question-audio1.mp3"></audio>
+      <audio id="correct-audio" src="correct-audio.mp3"></audio>
+      <audio id="incorrect-audio" src="incorrect-audio.mp3"></audio>
+      <h2 id="question">Question will appear here</h2>
+      <div id="options-container">
+        <button class="option" id="option1">Option 1</button>
+        <button class="option" id="option2">Option 2</button>
+        <button class="option" id="option3">Option 3</button>
+        <button class="option" id="option4">Option 4</button>
+      </div>
+      <div id="feedback"></div> <!-- Feedback section -->
+    </div>
+  </div>
+
+  <script>
+    const question = document.getElementById('question');
+    const options = document.querySelectorAll('.option');
+    const questionAudio = document.getElementById('question-audio');
+    const correctAudio = document.getElementById('correct-audio');
+    const incorrectAudio = document.getElementById('incorrect-audio');
+    const questionContainer = document.getElementById('question-container');
+    const startButton = document.getElementById('start-button');
+    const feedback = document.getElementById('feedback');
+
+    // Sample question and options
+    const questions = [
+      {
+        questionText: 'Which property is used to change the background color in CSS?',
+        options: ['color', 'background-color', 'bgcolor', 'background'],
+        correctAnswer: 1 // This refers to the second option (Joe Biden)
+      }
+    ];
+
+    let currentQuestion = 0;
+
+    function startQuiz() {
+      startButton.style.display = 'none'; // Hide start button
+      questionContainer.style.display = 'block'; // Show question container
+      questionAudio.play().then(() => {
+        showQuestion();
+      }).catch(error => {
+        console.log('Audio play failed:', error);
+      });
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      question.textContent = q.questionText;
+      feedback.textContent = ''; // Clear previous feedback
+      let delay = 0;
+
+      // Display options one by one with a delay
+      q.options.forEach((option, index) => {
+        setTimeout(() => {
+          options[index].textContent = option;
+          options[index].style.display = 'block';
+        }, delay);
+        delay += 1000; // Show next option after 1 second
+      });
+
+      // Add click listeners for each option
+      options.forEach((optionButton, index) => {
+        optionButton.onclick = () => {
+          checkAnswer(index);
+        };
+      });
+    }
+
+    function checkAnswer(selectedIndex) {
+      const correctIndex = questions[currentQuestion].correctAnswer;
+
+      if (selectedIndex === correctIndex) {
+        feedback.textContent = 'Correct!'; // Show correct feedback
+        feedback.style.color = 'green';
+        correctAudio.play().catch(error => {
+          console.log('Audio play failed:', error);
+        });
+      } else {
+        feedback.textContent = 'Incorrect!'; // Show incorrect feedback
+        feedback.style.color = 'red';
+        incorrectAudio.play().catch(error => {
+          console.log('Audio play failed:', error);
+        });
+      }
+    }
+
+    // Start quiz on button click (user interaction)
+    startButton.addEventListener('click', startQuiz);
+  </script>
+
+</body>
+</html>
